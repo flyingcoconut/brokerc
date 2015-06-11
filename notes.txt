@@ -1,0 +1,27 @@
+mqpc --exchange example --type direct --key test --listen --queue --durable --persistent --listen
+
+argument   Type      Value                    default
+
+exchange   string    "*"                      None
+type       choice    [direct, topic, fanout]  direct
+key        string    "*"                      None
+durable    boolean   True|False               False
+persistent boolean   True|False               False
+consumer   boolean   True|False               False
+declare    boolean   True|False               False
+ack        boolean   True|False               False
+exclusive  boolean   True|False               True
+queue      string    "*"                      None
+vhost      string    "*"                      "/"
+host       string    "*"                      None
+port       int       0-9                      None
+driver     choice    [amqp, stomp, redis, etc]
+channel    string    "*"
+
+
+driver [amqp, stomp, redis, zmq, mqtt, sns, etc
+
+
+brokerc --driver redis --host localhost --port 1234 --channel "test" --consumer
+brokerc --driver amqp --exchange example --type direct --key test --queue --durable --persistent --consumer
+
