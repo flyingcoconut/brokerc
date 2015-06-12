@@ -17,23 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from brokerc.drivers import driver
-
-import redis
-
-
-class RedisDriver(driver.BaseDriver):
+class BaseDriver(object):
     def __init__(self, args):
-        driver.BaseDriver.__init__(self, args)
-        self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
-        self.pubsub = self.connection.pubsub()
-        
-    def consume(self, callback):
-        self.pubsub.subscribe("test")
-        print(self.pubsub.get_message())
+        self.args = args
+
+    def initialize(self):
+        pass
 
     def publish(self, message):
-        self.connection.publish("test", "allobonjour")
+        pass
 
-
-
+    def consume(self, callback):
+        pass

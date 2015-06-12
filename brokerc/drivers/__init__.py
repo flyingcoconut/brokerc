@@ -17,23 +17,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from brokerc.drivers import driver
+import importlib
 
-import redis
+__drivers__ = {
+    'null' : ['driver', 'BaseDriver'],
+    'amqp' : ['amqp', 'AmqpDriver'],
+    'redis' : ['redis', 'RedisDriver']
+}
 
+def list_drivers():
+    return __drivers__.keys()
 
-class RedisDriver(driver.BaseDriver):
-    def __init__(self, args):
-        driver.BaseDriver.__init__(self, args)
-        self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
-        self.pubsub = self.connection.pubsub()
-        
-    def consume(self, callback):
-        self.pubsub.subscribe("test")
-        print(self.pubsub.get_message())
+def load(driver, args):
+    try:
+        module_name = __drivers__[driver][0]
+        driver_name = __drivers__[driver][1]
+    except KeyError:
+        raise ValueError("Driver : " + str(driver) + " : is not valid")
 
-    def publish(self, message):
-        self.connection.publish("test", "allobonjour")
-
-
-
+    try:
+        module = importlib.import_module("." + module_name, "brokerc.drivers")
+        driver = getattr(module, driver_name)
+    except Exception as e:
+        raise ImportError("Impossible to load : " + str(driver) + " : " + str(e))
+    return driver(args)
