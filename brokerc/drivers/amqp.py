@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author : Patrick Charron
 # Email : patrick.charron.pc@gmail.com
-# Description : Broker Client
+# Description : Message Broker Client
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,25 +21,39 @@ from brokerc.drivers import driver
 
 import pika
 
-
 class AmqpDriver(driver.BaseDriver):
-    def __init__(self):
-        driver.BaseDriver.__init__(self)
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='127.0.0.1'))
-        channel = connection.channel()
-        channel.exchange_declare(exchange='fluentd', type='direct', durable=True)
-        result = channel.queue_declare(exclusive=True)
-        queue_name = result.method.queue
-        channel.queue_bind(exchange='fluentd', queue=queue_name, routing_key="fluentd-tag")
+    def __init__(self, args):
+        driver.BaseDriver.__init__(self, args)
+
+    def initialize(self):
+        pika.ConnectionParameters(host=u'10.15.10.2')
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.args.host))
+        self.channel = self.connection.channel()
+        self.channel.exchange_declare(exchange=self.args.exchange, type='direct', durable=True)
+        self.result = self.channel.queue_declare(exclusive=True)
+        self.queue_name = self.result.method.queue
+        self.channel.queue_bind(exchange=self.args.exchange, queue=self.queue_name, routing_key=self.args.key)
         def callback(ch, method, properties, body):
             print(" [x] %r:%r" % (method.routing_key, body,))
 
+    def create_message(self, ch, method, properties, body):
+        message = {
+            'channel': ch,
+            'method': method,
+            'properties': properties,
+            'body': body
+        }
+        print(message)
+
     def consume(self, callback):
-        channel.basic_consume(callback, queue=queue_name, no_ack=True)
-        channel.start_consuming()
+        self.channel.basic_consume(self.create_message, queue=self.queue_name, no_ack=True)
+        self.channel.start_consuming()
 
     def publish(self, message):
-        channel.basic_publish(exchange='', routing_key='hello', body=message)
+        self.channel.basic_publish(exchange=self.args.exchange, routing_key=self.args.key, body=message)
+
+    def close(self):
+        self.connection.close()
 
 
 

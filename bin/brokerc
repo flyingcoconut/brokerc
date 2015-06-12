@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author : Patrick Charron
 # Email : patrick.charron.pc@gmail.com
-# Description : Broker Client
+# Description : Message Broker Client
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,45 +19,59 @@
 
 import argparse
 import sys
+import os
 
 from brokerc import drivers
 
 parser = argparse.ArgumentParser(description='Broker Client')
-#General arguments
 parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
 parser.add_argument('--list-drivers', action='store_true', help='list  available drivers')
+parser.add_argument('--debug', action='store_true', help='enable debug')
 parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='broker hostname')
 parser.add_argument('--port', metavar='PORT', type=int, help='broker port')
-parser.add_argument('--consumer', action='store_true', default=True, help='act as a consumer')
+parser.add_argument('--prefetch', metavar='QUANTITY', type=int, help='prefetch')
+parser.add_argument('--consumer', action='store_true', default=False, help='act as a consumer')
+parser.add_argument('--throttling', metavar='Msg/s', type=int, help='process message every second')
 parser.add_argument('--exchange', metavar='EXCHANGE', type=str, help='exchange name')
 parser.add_argument('--vhost', metavar='N', type=str, help='vhost')
 parser.add_argument('--queue', metavar='N', type=str, nargs='+', help='queue name')
 parser.add_argument('--type', metavar='N', type=str, choices=['direct', 'fanout', 'topic'], help='exchange type')
-parser.add_argument('--key', metavar='N', type=str, nargs='+', help='key name')
-parser.add_argument('--durable', metavar='N', type=bool, help='durable')
-parser.add_argument('--persistent', metavar='N', type=bool, help='durable')
-parser.add_argument('--declare', metavar='N', type=bool, help='declare')
-parser.add_argument('--ack', metavar='N', type=bool, help='ack message')
-parser.add_argument('--exclusive', metavar='N', type=bool, help='exclusive queue')
-parser.add_argument('--channel', metavar='N', type=bool, nargs='+', help='channel name')
-
+parser.add_argument('--key', type=str, help='key name')
+parser.add_argument('--durable', action='store_true', help='durable exchange')
+parser.add_argument('--persistent', action='store_true', help='persistant message')
+parser.add_argument('--declare', metavar='N', type=bool, help='declare exchange')
+parser.add_argument('--ack', action='store_true', help='ack message')
+parser.add_argument('--exclusive', action='store_true', help='exclusive queue')
+parser.add_argument('--channel', metavar='N', type=str, nargs='+', help='channel name')
 
 args = parser.parse_args()
-if args.list_drivers:
-    for driver in drivers.list_drivers():
-        print(driver)
-else:
-    try:
-        driver = drivers.load(args.driver, args)
-    except ImportError as e:
-        print(e)
-        sys.exit(1)
-    except ValueError as e:
-        print(e)
-        sys.exit(1)
 
-    driver.consume("allo")
-
-
-
-
+if __name__ == "__main__":
+    if args.list_drivers:
+        for driver in drivers.list_drivers():
+            print(driver)
+    else:
+        try:
+            driver = drivers.load(args.driver, args)
+            pass
+        except ImportError as e:
+            print(e)
+            sys.exit(1)
+        except ValueError as e:
+            print(e)
+            sys.exit(1)
+        
+        driver.initialize()
+        if args.consumer:
+            try:
+                driver.consume("allo")
+            except KeyboardInterrupt:
+                sys.exit(0)
+        else:
+            if os.isatty(0):
+                print("ctrl+c to quit")
+            try:
+                for line in sys.stdin:
+                    driver.publish(line)
+            except KeyboardInterrupt:
+                sys.exit(0)

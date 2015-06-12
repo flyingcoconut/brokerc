@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author : Patrick Charron
 # Email : patrick.charron.pc@gmail.com
-# Description : Broker Client
+# Description : Message Broker Client
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,24 +16,34 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import time
 
 from brokerc.drivers import driver
-
 import redis
 
 
 class RedisDriver(driver.BaseDriver):
     def __init__(self, args):
         driver.BaseDriver.__init__(self, args)
+
+    def initialize(self):
         self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
-        self.pubsub = self.connection.pubsub()
+        self.pubsub = self.connection.pubsub(ignore_subscribe_messages=True)
         
     def consume(self, callback):
-        self.pubsub.subscribe("test")
-        print(self.pubsub.get_message())
+        self.pubsub.subscribe(self.args.channel)
+        while True:
+            message = self.pubsub.get_message()
+            if message:
+                    print(message)
+            time.sleep(0.0001)
 
     def publish(self, message):
-        self.connection.publish("test", "allobonjour")
+        for channel in self.args.channel:
+            self.connection.publish(channel, message)
+
+    def close(self):
+        pass
 
 
 

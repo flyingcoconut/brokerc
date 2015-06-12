@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author : Patrick Charron
 # Email : patrick.charron.pc@gmail.com
-# Description : Broker Client
+# Description : Message Broker Client
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,8 @@ import importlib
 __drivers__ = {
     'null' : ['driver', 'BaseDriver'],
     'amqp' : ['amqp', 'AmqpDriver'],
-    'redis' : ['redis', 'RedisDriver']
+    'redis' : ['redis', 'RedisDriver'],
+    'kafka' : ['kafka', 'KafkaDriver']
 }
 
 def list_drivers():
