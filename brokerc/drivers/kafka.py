@@ -17,6 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from kafka import SimpleProducer, KafkaClient
+from kafka import KafkaConsumer
+from kafka.common import LeaderNotAvailableError
+
+
 class KafkaDriver(object):
     def __init__(self, args):
         self.args = args
@@ -25,10 +30,25 @@ class KafkaDriver(object):
         pass
 
     def publish(self, message):
-        pass
+        kafka = KafkaClient("192.168.33.10:9092")
+        producer = SimpleProducer(kafka)
+     
+        topic = b'test'
+        msg = b'Hello World'
+     
+        try:
+            print_response(producer.send_messages(topic, msg))
+        except LeaderNotAvailableError:
+            time.sleep(1)
+            print_response(producer.send_messages(topic, msg))
+     
+        kafka.close()
 
     def consume(self, callback):
-        pass
+        consumer = KafkaConsumer(b"test", group_id=b"my_group_id", metadata_broker_list=["192.168.33.10:9092"])
+        for message in consumer:
+            # This will wait and print messages as they become available
+            print(message)
 
     def close(self):
         pass

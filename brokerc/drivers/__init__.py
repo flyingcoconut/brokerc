@@ -23,7 +23,11 @@ __drivers__ = {
     'null' : ['driver', 'BaseDriver'],
     'amqp' : ['amqp', 'AmqpDriver'],
     'redis' : ['redis', 'RedisDriver'],
-    'kafka' : ['kafka', 'KafkaDriver']
+    'kafka' : ['kafka', 'KafkaDriver'],
+    'zmq': ['zmq', 'ZmqDriver'],
+    'sqs': ['sqs', 'SqsDriver'],
+    'stomp': ['stomp', 'StompDriver'],
+    'mqtt': ['mqtt', 'MqttDriver']
 }
 
 def list_drivers():

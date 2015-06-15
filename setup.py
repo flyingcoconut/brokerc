@@ -18,11 +18,12 @@ setup(name='brokerc',
       author_email='patrick.charron.pc@gmail.com',
       license='GPL v3',
       packages=['bin', 'brokerc', 'brokerc/drivers'],
-      install_requires=[
-      ],
+      install_requires=['redis', 'python3-pika', 'kafka-python', 'pyzmq', 'boto', 'stomp.py', 'paho-mqtt'],
       #entry_points={
       #    'console_scripts': ['mytop=bin:main'],
       #},
       scripts=['bin/brokerc'],
       include_package_data=True,
       zip_safe=False)
+
+

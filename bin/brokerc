@@ -43,6 +43,9 @@ parser.add_argument('--declare', metavar='N', type=bool, help='declare exchange'
 parser.add_argument('--ack', action='store_true', help='ack message')
 parser.add_argument('--exclusive', action='store_true', help='exclusive queue')
 parser.add_argument('--channel', metavar='N', type=str, nargs='+', help='channel name')
+parser.add_argument('--region', metavar='REGION', type=str, help='region name')
+parser.add_argument('--aws-access-key', metavar='KEY', type=str, help='AWS access key')
+parser.add_argument('--aws-secret-key', metavar='KEY', type=str, help='AWS secret key')
 
 args = parser.parse_args()
 
