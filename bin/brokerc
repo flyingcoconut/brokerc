@@ -23,33 +23,35 @@ import os
 
 from brokerc import drivers
 
-parser = argparse.ArgumentParser(description='Broker Client')
-parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
-parser.add_argument('--list-drivers', action='store_true', help='list  available drivers')
-parser.add_argument('--debug', action='store_true', help='enable debug')
-parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='broker hostname')
-parser.add_argument('--port', metavar='PORT', type=int, help='broker port')
-parser.add_argument('--prefetch', metavar='QUANTITY', type=int, help='prefetch')
-parser.add_argument('--consumer', action='store_true', default=False, help='act as a consumer')
-parser.add_argument('--throttling', metavar='Msg/s', type=int, help='process message every second')
-parser.add_argument('--exchange', metavar='EXCHANGE', type=str, help='exchange name')
-parser.add_argument('--vhost', metavar='N', type=str, help='vhost')
-parser.add_argument('--queue', metavar='N', type=str, nargs='+', help='queue name')
-parser.add_argument('--type', metavar='N', type=str, choices=['direct', 'fanout', 'topic'], help='exchange type')
-parser.add_argument('--key', type=str, help='key name')
-parser.add_argument('--durable', action='store_true', help='durable exchange')
-parser.add_argument('--persistent', action='store_true', help='persistant message')
-parser.add_argument('--declare', metavar='N', type=bool, help='declare exchange')
-parser.add_argument('--ack', action='store_true', help='ack message')
-parser.add_argument('--exclusive', action='store_true', help='exclusive queue')
-parser.add_argument('--channel', metavar='N', type=str, nargs='+', help='channel name')
-parser.add_argument('--region', metavar='REGION', type=str, help='region name')
-parser.add_argument('--aws-access-key', metavar='KEY', type=str, help='AWS access key')
-parser.add_argument('--aws-secret-key', metavar='KEY', type=str, help='AWS secret key')
+def main():
+    parser = argparse.ArgumentParser(description='Broker Client')
+    parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
+    parser.add_argument('--list-drivers', action='store_true', help='list  available drivers')
+    parser.add_argument('--debug', action='store_true', help='enable debug')
+    parser.add_argument('--stats', action='store_true', help='display stats')
+    parser.add_argument('--sample', type=int, help='print message at a specific frequency')
+    parser.add_argument('--fields', metavar='N', type=str, nargs='+', help='output specific fields')
+    parser.add_argument('--throttling', metavar='Msg/s', type=int, help='process message every second')
+    parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='broker hostname')
+    parser.add_argument('--port', metavar='PORT', type=int, help='broker port')
+    parser.add_argument('--prefetch', metavar='QUANTITY', type=int, help='prefetch')
+    parser.add_argument('--consumer', action='store_true', default=False, help='act as a consumer')
+    parser.add_argument('--exchange', metavar='EXCHANGE', type=str, help='exchange name')
+    parser.add_argument('--vhost', metavar='N', type=str, help='vhost')
+    parser.add_argument('--queue', metavar='N', type=str, nargs='+', help='queue name')
+    parser.add_argument('--type', metavar='N', type=str, choices=['direct', 'fanout', 'topic'], help='exchange type')
+    parser.add_argument('--key', type=str, help='key name')
+    parser.add_argument('--durable', action='store_true', help='durable exchange')
+    parser.add_argument('--persistent', action='store_true', help='persistant message')
+    parser.add_argument('--declare', metavar='N', type=bool, help='declare exchange')
+    parser.add_argument('--ack', action='store_true', help='ack message')
+    parser.add_argument('--exclusive', action='store_true', help='exclusive queue')
+    parser.add_argument('--channel', metavar='N', type=str, nargs='+', help='channel name')
+    parser.add_argument('--region', metavar='REGION', type=str, help='region name')
+    parser.add_argument('--aws-access-key', metavar='KEY', type=str, help='AWS access key')
+    parser.add_argument('--aws-secret-key', metavar='KEY', type=str, help='AWS secret key')
+    args = parser.parse_args()
 
-args = parser.parse_args()
-
-if __name__ == "__main__":
     if args.list_drivers:
         for driver in drivers.list_drivers():
             print(driver)
@@ -58,23 +60,28 @@ if __name__ == "__main__":
             driver = drivers.load(args.driver, args)
             pass
         except ImportError as e:
-            print(e)
-            sys.exit(1)
+            sys.exit(e)
         except ValueError as e:
-            print(e)
-            sys.exit(1)
+            sys.exit(e)
         
-        driver.initialize()
+        try:
+            driver.initialize()
+        except Exception as e:
+            sys.exit(e)
+
         if args.consumer:
             try:
-                driver.consume("allo")
+                driver.consume("")
             except KeyboardInterrupt:
                 sys.exit(0)
         else:
             if os.isatty(0):
-                print("ctrl+c to quit")
+                print("Press ctrl+c to quit")
             try:
                 for line in sys.stdin:
                     driver.publish(line)
             except KeyboardInterrupt:
                 sys.exit(0)
+
+if __name__ == "__main__":
+    main()
