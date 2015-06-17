@@ -17,19 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class BaseDriver(object):
-    def __init__(self, args, callback):
-        self.args = args
-        self.callback = callback
-
-    def initialize(self):
-        pass
-
-    def publish(self, message):
-        pass
-
-    def consume(self, callback):
-        pass
-
-    def close(self):
-        pass
+drivers = {
+    'zmq': 'ZmqDriver'
+}

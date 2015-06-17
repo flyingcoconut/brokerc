@@ -23,10 +23,20 @@ import os
 
 from brokerc import drivers
 
+def output(message):
+    print(message)
+#stats
+#sample
+#fields
+#throttling
+#
+
 def main():
     parser = argparse.ArgumentParser(description='Broker Client')
+    parser.add_argument('--broker', metavar='BROKER', type=str, help='broker')
     parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
-    parser.add_argument('--list-drivers', action='store_true', help='list  available drivers')
+    parser.add_argument('--list-drivers', action='store_true', help='list available drivers')
+    parser.add_argument('--list-brokers', action='store_true', help='list available brokers')
     parser.add_argument('--debug', action='store_true', help='enable debug')
     parser.add_argument('--stats', action='store_true', help='display stats')
     parser.add_argument('--sample', type=int, help='print message at a specific frequency')
@@ -52,12 +62,20 @@ def main():
     parser.add_argument('--aws-secret-key', metavar='KEY', type=str, help='AWS secret key')
     args = parser.parse_args()
 
+    if args.list_brokers:
+        for broker in drivers.list_brokers():
+            print(broker)
+
     if args.list_drivers:
-        for driver in drivers.list_drivers():
-            print(driver)
+        if args.broker:
+            for driver in drivers.list_drivers(args.broker):
+                print(driver)
+        else:
+            sys.exit('No broker selected')
+
     else:
         try:
-            driver = drivers.load(args.driver, args)
+            driver = drivers.load(args.broker, args.driver, args, output)
             pass
         except ImportError as e:
             sys.exit(e)

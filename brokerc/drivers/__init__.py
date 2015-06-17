@@ -19,30 +19,53 @@
 
 import importlib
 
-__drivers__ = {
-    'null' : ['driver', 'BaseDriver'],
-    'amqp' : ['amqp', 'AmqpDriver'],
-    'redis' : ['redis', 'RedisDriver'],
-    'kafka' : ['kafka', 'KafkaDriver'],
-    'zmq': ['zmq', 'ZmqDriver'],
-    'sqs': ['sqs', 'SqsDriver'],
-    'stomp': ['stomp', 'StompDriver'],
-    'mqtt': ['mqtt', 'MqttDriver']
-}
+__brokers__ = [
+    'null',
+    'amqp',
+    'redis',
+    'kafka',
+    'zmq',
+    'sqs',
+    'stomp',
+    'mqtt'
+]
 
-def list_drivers():
-    return __drivers__.keys()
+def list_brokers():
+    return __brokers__
 
-def load(driver, args):
+def list_drivers(broker):
+    if broker not in __brokers__:
+        raise ValueError("Broker : " + str(broker) + " : is not valid")
     try:
-        module_name = __drivers__[driver][0]
-        driver_name = __drivers__[driver][1]
-    except KeyError:
-        raise ValueError("Driver : " + str(driver) + " : is not valid")
-
-    try:
-        module = importlib.import_module("." + module_name, "brokerc.drivers")
-        driver = getattr(module, driver_name)
+        broker_module = importlib.import_module("." + broker, "brokerc.drivers")
     except Exception as e:
-        raise ImportError("Impossible to load : " + str(driver) + " : " + str(e))
-    return driver(args)
+        raise ImportError("Impossible to load : " + str(broker) + " : " + str(e))
+    return broker_module.drivers.keys()
+
+
+def load(broker, driver, args, callback):
+    if broker not in __brokers__:
+        raise ValueError("Broker : " + str(broker) + " : is not valid")
+    try:
+        broker_module = importlib.import_module("." + broker, "brokerc.drivers")
+    except Exception as e:
+        raise ImportError("Impossible to load : " + str(broker) + " : " + str(e))
+
+    if driver:
+        try:
+            driver_name = broker_module.drivers[driver]
+        except KeyError:
+            raise ValueError("Driver : " + str(driver) + " : is not valid")
+        try:
+            driver_module = importlib.import_module("." + driver, "brokerc.drivers." + broker)
+            driver = getattr(driver_module, driver_name)
+        except Exception as e:
+            raise ImportError("Impossible to load : " + str(driver) + " : " + str(e))
+        return driver(args, callback)
+
+    else:
+        for driver in broker_module.drivers.keys():
+            driver_name = broker_module.drivers[driver]
+            driver_module = importlib.import_module("." + driver, "brokerc.drivers." + broker)
+            driver = getattr(driver_module, driver_name)
+            return driver(args, callback)

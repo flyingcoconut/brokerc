@@ -21,9 +21,9 @@ from brokerc.drivers import driver
 
 import pika
 
-class AmqpDriver(driver.BaseDriver):
-    def __init__(self, args):
-        driver.BaseDriver.__init__(self, args)
+class PikaDriver(driver.BaseDriver):
+    def __init__(self, args, callback):
+        driver.BaseDriver.__init__(self, args, callback)
 
     def initialize(self):
         pika.ConnectionParameters(host=u'10.15.10.2')
@@ -43,7 +43,7 @@ class AmqpDriver(driver.BaseDriver):
             'properties': properties,
             'body': body
         }
-        print(message)
+        self.callback(message)
 
     def consume(self, callback):
         self.channel.basic_consume(self.create_message, queue=self.queue_name, no_ack=True)
