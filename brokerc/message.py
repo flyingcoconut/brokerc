@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-drivers = {
-    'redis': 'RedisDriver'
-}
-fields = [
-]
+class Message(object):
+    def __init__(self, meta={}, message=None):
+        self.meta = meta
+        self.message = message

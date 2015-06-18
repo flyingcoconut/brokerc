@@ -22,19 +22,19 @@ import sys
 import os
 
 from brokerc import drivers
-
-def output(message):
-    print(message)
+from brokerc import output
 
 def main():
-    parser = argparse.ArgumentParser(description='Broker Client')
+    parser = argparse.ArgumentParser(description='Message Broker Client')
     parser.add_argument('--broker', metavar='BROKER', type=str, help='broker')
     parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
     parser.add_argument('--list-drivers', action='store_true', help='list available drivers')
     parser.add_argument('--list-brokers', action='store_true', help='list available brokers')
     parser.add_argument('--debug', action='store_true', help='enable debug')
     parser.add_argument('--stats', action='store_true', help='display stats')
+    parser.add_argument('--close', action='store_true', help='close consumer after one message')
     parser.add_argument('--sample', type=int, help='print message at a specific frequency')
+    parser.add_argument('--list-fields', action='store_true', help='close consumer after one message')
     parser.add_argument('--fields', metavar='N', type=str, nargs='+', help='output specific fields')
     parser.add_argument('--throttling', metavar='Msg/s', type=int, help='process message every second')
     parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='broker hostname')
@@ -60,19 +60,19 @@ def main():
     if args.list_brokers:
         for broker in drivers.list_brokers():
             print(broker)
-        sys.exit()
 
-    if args.list_drivers:
+    elif args.list_drivers:
         if args.broker:
             for driver in drivers.list_drivers(args.broker):
                 print(driver)
         else:
             sys.exit('No broker selected')
-        sys.exit()
+
 
     else:
+        out = output.Output(fields=args.fields)
         try:
-            driver = drivers.load(args.broker, args.driver, args, output)
+            driver = drivers.load(args.broker, args.driver, args, out.output)
             pass
         except ImportError as e:
             sys.exit(e)

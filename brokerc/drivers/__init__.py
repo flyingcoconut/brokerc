@@ -33,7 +33,6 @@ __brokers__ = [
     'zmq'
 ]
 
-
 def list_brokers():
     return __brokers__
 
@@ -45,7 +44,6 @@ def list_drivers(broker):
     except Exception as e:
         raise ImportError("Impossible to load : " + str(broker) + " : " + str(e))
     return broker_module.drivers.keys()
-
 
 def load(broker, driver, args, callback):
     if broker not in __brokers__:

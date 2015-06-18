@@ -19,6 +19,22 @@
 
 
 class Output(object):
-    def __init__(self, stats=False, fields = []):
-        pass
+    def __init__(self, stats=False, fields=None):
+        self.stats = stats
+        self.fields = fields
+
+    def output(self, message):
+        out = []
+        if self.fields:
+            for field in self.fields:
+                try:
+                    out.append(str(field) + ': ' + str(message[field]))
+                except KeyError:
+                    pass
+        else:
+            for field in message:
+                out.append(str(field) + ': ' + str(message[field]))
+        print(' '.join(out))
+        
+            
 
