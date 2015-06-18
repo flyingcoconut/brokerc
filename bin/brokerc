@@ -25,11 +25,6 @@ from brokerc import drivers
 
 def output(message):
     print(message)
-#stats
-#sample
-#fields
-#throttling
-#
 
 def main():
     parser = argparse.ArgumentParser(description='Broker Client')
@@ -65,6 +60,7 @@ def main():
     if args.list_brokers:
         for broker in drivers.list_brokers():
             print(broker)
+        sys.exit()
 
     if args.list_drivers:
         if args.broker:
@@ -72,6 +68,7 @@ def main():
                 print(driver)
         else:
             sys.exit('No broker selected')
+        sys.exit()
 
     else:
         try:

@@ -22,13 +22,17 @@ import importlib
 __brokers__ = [
     'null',
     'amqp',
-    'redis',
+    'azure',
+    'ironmq',
     'kafka',
-    'zmq',
+    'mqtt',
+    'nsq',
+    'redis',
     'sqs',
     'stomp',
-    'mqtt'
+    'zmq'
 ]
+
 
 def list_brokers():
     return __brokers__

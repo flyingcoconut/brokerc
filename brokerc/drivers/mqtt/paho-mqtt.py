@@ -17,9 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import stomp
+try:
+    import paho.mqtt.client as mqtt
+except ImportError:
+    raise ImportError('package paho-mqtt is not installed')
 
-class StompDriver(object):
+class PahoMqttDriver(object):
     def __init__(self, args):
         self.args = args
 

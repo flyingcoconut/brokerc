@@ -17,20 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import boto.sqs
-
-class SqsDriver(object):
-    def __init__(self, args):
-        self.args = args
-
-    def initialize(self):
-        pass
-
-    def publish(self, message):
-        pass
-
-    def consume(self, callback):
-        pass
-
-    def close(self):
-        pass
+drivers = {
+    'paho-mqtt': 'PahoMqttDriver'
+}

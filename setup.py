@@ -9,19 +9,19 @@ setup(name='brokerc',
       description='brokerc',
       #long_description=readme(),
       classifiers=[
-        'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Programming Language :: Python :: 3.3',
+        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        'Programming Language :: Python :: 3.4',
       ],
       keywords='brokerc',
       url='https://github.com/flyingcoconut/brokerc',
       author='Patrick Charron',
       author_email='patrick.charron.pc@gmail.com',
       license='GPL v3',
-      packages=['bin', 'brokerc', 'brokerc/drivers', 'brokerc/drivers/amqp', 'brokerc/drivers/redis'],
-      install_requires=['redis', 'python3-pika', 'kafka-python', 'pyzmq', 'boto', 'stomp.py', 'paho-mqtt'],
-      #entry_points={
-      #    'console_scripts': ['mytop=bin:main'],
-      #},
+      packages=['bin', 'brokerc'],
+      package_dir = {
+          'drivers': 'drivers'
+      },
+      #install_requires=['redis', 'python3-pika', 'kafka-python', 'pyzmq', 'boto', 'stomp.py', 'paho-mqtt'],
       scripts=['bin/brokerc'],
       include_package_data=True,
       zip_safe=False)

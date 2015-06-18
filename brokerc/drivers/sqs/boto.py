@@ -16,34 +16,24 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import time
 
-from brokerc.drivers import driver
-import redis
+try:
+    import boto.sqs
+except ImportError:
+    raise ImportError("package boto is not installed")
 
-
-class RedispyDriver(driver.BaseDriver):
-    def __init__(self, args, callback):
-        driver.BaseDriver.__init__(self, args, callback)
+class BotoDriver(object):
+    def __init__(self, args):
+        self.args = args
 
     def initialize(self):
-        self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
-        self.pubsub = self.connection.pubsub(ignore_subscribe_messages=True)
-        
-    def consume(self, callback):
-        self.pubsub.subscribe(self.args.channel)
-        while True:
-            message = self.pubsub.get_message()
-            if message:
-                    self.callback(message)
-            time.sleep(0.0001)
+        pass
 
     def publish(self, message):
-        for channel in self.args.channel:
-            self.connection.publish(channel, message)
+        pass
+
+    def consume(self, callback):
+        pass
 
     def close(self):
         pass
-
-
-
