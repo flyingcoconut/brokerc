@@ -17,19 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class BaseDriver(object):
-    def __init__(self, args, callback):
-        self.args = args
-        self.callback = callback
+import importlib
+import os
+import pkgutil
 
-    def initialize(self):
-        pass
+from brokerc import basebroker
 
-    def publish(self, message):
-        pass
+def list_brokers():
+    return [f[1] for f in pkgutil.iter_modules([os.path.dirname(__file__)])]
 
-    def consume(self, callback):
-        pass
-
-    def close(self):
-        pass
+def create(broker_name):
+    #Load broker module
+    if broker_name not in list_brokers():
+        raise ValueError("Broker : " + str(broker_name) + " : is not valid")
+    try:
+        broker_module = importlib.import_module("." + broker_name, "brokerc.brokers")
+    except Exception as e:
+        raise ImportError("Impossible to load : " + str(broker_name) + " : " + str(e))
+    broker = basebroker.BaseBroker(broker_name)
+    return broker

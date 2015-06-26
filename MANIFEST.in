@@ -1,1 +1,1 @@
-recursive-include brokerc/drivers *
+recursive-include brokerc/brokers *

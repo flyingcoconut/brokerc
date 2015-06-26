@@ -16,9 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import time
 
-from brokerc.drivers import driver
+from brokerc import driver
+from brokerc import message
 
 try:
     import redis
@@ -26,9 +28,10 @@ except ImportError:
     raise ImportError("package redis is not installed")
 
 
-class RedisDriver(driver.BaseDriver):
+class Driver(driver.BaseDriver):
     def __init__(self, args, callback):
         driver.BaseDriver.__init__(self, args, callback)
+        self.actions = ['consume', 'publish', 'list-channels', 'list-subscribers']
 
     def initialize(self):
         self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
@@ -37,9 +40,14 @@ class RedisDriver(driver.BaseDriver):
     def consume(self, callback):
         self.pubsub.subscribe(self.args.channel)
         while True:
-            message = self.pubsub.get_message()
-            if message:
-                    self.callback(message)
+            data = self.pubsub.get_message()
+            if data:
+                msg = message.Message()
+                msg.body = data['data'].decode("utf-8")
+                msg.metadata['channel'] = data['channel'].decode("utf-8")
+                #msg.metadata['pattern'] = data['pattern'].decode("utf-8")
+                msg.metadata['type'] = data['type']
+                self.callback(msg)
             time.sleep(0.0001)
 
     def publish(self, message):

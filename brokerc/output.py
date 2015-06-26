@@ -19,22 +19,22 @@
 
 
 class Output(object):
-    def __init__(self, stats=False, fields=None):
+    def __init__(self, stats=False, metadata=None):
         self.stats = stats
-        self.fields = fields
+        self.metadata = metadata
 
     def output(self, message):
         out = []
-        if self.fields:
-            for field in self.fields:
+        if self.metadata:
+            for data in self.metadata:
                 try:
-                    out.append(str(field) + ': ' + str(message[field]))
+                    out.append(str(data) + ': ' + str(message.metadata[data]))
                 except KeyError:
                     pass
+            out.append('message: ' + message.body)
         else:
-            for field in message:
-                out.append(str(field) + ': ' + str(message[field]))
-        print(' '.join(out))
+            out.append(message.body)
+        print(', '.join(out))
         
             
 

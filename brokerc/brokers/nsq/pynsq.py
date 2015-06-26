@@ -16,7 +16,38 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import time
 
-drivers = {
-    'pika': 'PikaDriver'
-}
+from brokerc import driver
+from brokerc import message
+
+try:
+    import nsq
+except ImportError:
+    raise ImportError("package pynsq is not installed")
+
+
+class PynsqDriver(driver.BaseDriver):
+    def __init__(self, args, callback):
+        driver.BaseDriver.__init__(self, args, callback)
+
+    def create_message(self, message):
+        msg = message.Message()
+        
+    def consume(self, callback):
+        reader = nsq.Reader(message_handler=self.create_message, 
+                 lookupd_http_addresses=['http://127.0.0.1:4161'],
+                 topic=self.args.topic,
+                 channel=self.args.channel,
+                 lookupd_poll_interval=5
+        )
+        nsq.run()
+
+    def publish(self, message):
+        pass
+
+    def close(self):
+        pass
+
+
+

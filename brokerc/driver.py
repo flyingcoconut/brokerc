@@ -17,8 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-drivers = {
-    'redis': 'RedisDriver'
-}
-fields = [
-]
+class BaseDriver(object):
+    def __init__(self, args, callback):
+        self.args = args
+        self.callback = callback
+        self.actions =  []
+
+
+    def parse_arguments(self):
+        pass
+
+    def initialize(self):
+        pass
+
+    def publish(self, message):
+        pass
+
+    def consume(self, callback):
+        pass
+
+    def close(self):
+        pass

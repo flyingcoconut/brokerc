@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class Message(object):
-    def __init__(self, metadata={}, body=None):
-        self.metadata = metadata
-        self.body = body
+drivers = {
+    'pynsq': 'PynsqDriver'
+}
+fields = [
+]

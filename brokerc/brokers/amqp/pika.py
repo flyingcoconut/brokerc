@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from brokerc.drivers import driver
+from brokerc import driver
+from brokerc import message
 
 import pika
 
@@ -26,7 +27,7 @@ class PikaDriver(driver.BaseDriver):
         driver.BaseDriver.__init__(self, args, callback)
 
     def initialize(self):
-        pika.ConnectionParameters(host=u'10.15.10.2')
+        pika.ConnectionParameters(host=self.args.host)
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.args.host))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=self.args.exchange, type='direct', durable=True)
@@ -37,13 +38,18 @@ class PikaDriver(driver.BaseDriver):
             print(" [x] %r:%r" % (method.routing_key, body,))
 
     def create_message(self, ch, method, properties, body):
-        message = {
-            'channel': ch,
-            'method': method,
-            'properties': properties,
-            'body': body
-        }
-        self.callback(message)
+        msg = message.Message()
+        msg.body = body.decode("utf-8")
+        msg.metadata['method'] = method
+        msg.metadata['consumer_tag'] = method.consumer_tag
+        msg.metadata['delivery_tag'] = method.delivery_tag
+        msg.metadata['redelivered'] = method.redelivered
+        msg.metadata['exchange'] = method.exchange
+        msg.metadata['key'] = method.routing_key
+        msg.metadata['app_id'] = properties.app_id
+        msg.metadata['content_type'] = properties.content_type
+        msg.metadata['headers'] = properties.headers
+        self.callback(msg)
 
     def consume(self, callback):
         self.channel.basic_consume(self.create_message, queue=self.queue_name, no_ack=True)
