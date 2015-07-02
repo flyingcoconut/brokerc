@@ -29,9 +29,13 @@ except ImportError:
 
 
 class Driver(driver.BaseDriver):
-    def __init__(self, args, callback):
-        driver.BaseDriver.__init__(self, args, callback)
+    def __init__(self, description, args, callback):
+        driver.BaseDriver.__init__(self, description, args, callback)
         self.actions = ['consume', 'publish', 'list-channels', 'list-subscribers']
+        self.parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='redis hostname')
+        self.parser.add_argument('--port', metavar='PORT', type=int, default=6379, help='redis port')
+        self.parser.add_argument('--channel', metavar='N', type=str, nargs='+', required=True, help='channel name')
+        self.parser.add_argument('--pattern', metavar='N', type=str, nargs='+', help='subscription pattern')
 
     def initialize(self):
         self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)

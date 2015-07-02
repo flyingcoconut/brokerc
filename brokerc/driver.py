@@ -17,15 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
+
 class BaseDriver(object):
-    def __init__(self, args, callback):
+    def __init__(self, description, args, callback):
         self.args = args
         self.callback = callback
         self.actions =  []
+        self.parser = argparse.ArgumentParser(description=description)
 
 
     def parse_arguments(self):
-        pass
+        self.args = self.parser.parse_args(self.args)
 
     def initialize(self):
         pass

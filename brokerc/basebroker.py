@@ -29,7 +29,7 @@ class BaseBroker(object):
     def list_drivers(self):
         return [f[1] for f in pkgutil.iter_modules([os.path.dirname(__file__) + "/brokers/" + self.name])]
 
-    def list_metadatas(self):
+    def list_metadata(self):
         return self._driver.metadata
 
     def list_actions(self):
@@ -45,12 +45,15 @@ class BaseBroker(object):
         if driver_name in self.list_drivers():
             driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
             driver = getattr(driver_module, 'Driver')
-            self._driver = driver
+            self._driver = driver(driver_name, args, callback)
         else:
             for driver_name in self.list_drivers():
                 driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
                 driver = getattr(driver_module, 'Driver')
-                self._driver = driver(args, callback)
+                self._driver = driver(driver_name, args, callback)
+
+    def parse_arguments(self):
+        self._driver.parse_arguments()
 
     def initialize(self):
         self._driver.initialize()

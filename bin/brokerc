@@ -67,6 +67,7 @@ def main():
             sys.exit(e)
         
         try:
+            broker.parse_arguments()
             broker.initialize()
         except Exception as e:
             sys.exit(e)

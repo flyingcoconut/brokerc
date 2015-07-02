@@ -17,14 +17,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from brokerc import basebroker
-import argparse
-
-parser = argparse.ArgumentParser(description='Redis Broker')
-parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='redis hostname')
-parser.add_argument('--port', metavar='PORT', type=int, default=6379, help='redis port')
-parser.add_argument('--channel', metavar='N', type=str, nargs='+', required=True, help='channel name')
-parser.add_argument('--pattern', metavar='N', type=str, nargs='+', help='subscription pattern')
-
-
 
