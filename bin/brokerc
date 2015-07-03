@@ -30,19 +30,18 @@ def main():
     parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
     parser.add_argument('--list-drivers', action='store_true', help='list available drivers')
     parser.add_argument('--list-brokers', action='store_true', help='list available brokers')
+    parser.add_argument('--list-options', action='store_true', help='list available options')
+    parser.add_argument('--list-metadata', action='store_true', help='list available metadata')
     parser.add_argument('--debug', action='store_true', help='enable debug')
     parser.add_argument('--stats', action='store_true', help='display stats')
     parser.add_argument('--close', action='store_true', help='close consumer after one message')
     parser.add_argument('--sample', type=int, help='print message at a specific frequency')
-    parser.add_argument('--list-meta', action='store_true', help='close consumer after one message')
-    parser.add_argument('--all-meta', action='store_true', help='display all metadata')
     parser.add_argument('--meta', metavar='N', type=str, nargs='+', help='output specific metadata')
     parser.add_argument('--throttling', metavar='Msg/s', type=int, help='process message every second')
     parser.add_argument('--consumer', action='store_true', default=False, help='act as a consumer')
-
-    parser.add_argument('--aws-access-key', metavar='KEY', type=str, help='AWS access key')
-    parser.add_argument('--aws-secret-key', metavar='KEY', type=str, help='AWS secret key')
     args, additional = parser.parse_known_args()
+
+    out = output.Output(metadata=args.meta)
 
     if args.list_brokers:
         for broker in brokers.list_brokers():
@@ -56,11 +55,27 @@ def main():
         else:
             sys.exit('No broker selected')
 
+    elif args.list_options:
+        if args.broker:
+            broker = brokers.create(args.broker)
+            broker.load_driver(args.driver, additional, out.output)
+            broker.list_options()
+        else:
+            sys.exit('No broker selected')
+
+    elif args.list_metadata:
+        if args.broker:
+            broker = brokers.create(args.broker)
+            broker.load_driver(args.driver, additional, out.output)
+            for meta in broker.list_metadata():
+                print(meta)
+        else:
+            sys.exit('No broker selected')
+
     else:
-        out = output.Output(metadata=args.meta)
         try:
             broker = brokers.create(args.broker)
-            broker.load(args.driver, additional, out)
+            broker.load_driver(args.driver, additional, out.output)
         except ImportError as e:
             sys.exit(e)
         except ValueError as e:

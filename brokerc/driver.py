@@ -24,7 +24,8 @@ class BaseDriver(object):
         self.args = args
         self.callback = callback
         self.actions =  []
-        self.parser = argparse.ArgumentParser(description=description)
+        self.metadata = {}
+        self.parser = argparse.ArgumentParser(prog='Driver(' + description + ')', usage='--driver ' + description + ' [OPTIONS]')
 
 
     def parse_arguments(self):

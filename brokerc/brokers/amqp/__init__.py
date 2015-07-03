@@ -17,30 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
-
-drivers = {
-    'pika': 'PikaDriver'
-}
-
-metadata = [
-    'channel',
-    'type',
-    'pattern'
+__drivers__ = [
+    'pika'
 ]
-
-parser = argparse.ArgumentParser(prog='amqp', description='AMQP Broker')
-parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='AMQP hostname')
-parser.add_argument('--port', metavar='PORT', type=int, default=5672, help='AMQP port')
-parser.add_argument('--prefetch', metavar='QUANTITY', type=int, help='prefetch')
-parser.add_argument('--exchange', metavar='EXCHANGE', type=str, required=True, help='exchange name')
-parser.add_argument('--vhost', metavar='N', type=str, help='vhost')
-parser.add_argument('--queue', metavar='N', type=str, nargs='+', help='queue name')
-parser.add_argument('--type', metavar='N', type=str, choices=['direct', 'fanout', 'topic'], help='exchange type')
-parser.add_argument('--key', type=str, help='key name')
-parser.add_argument('--durable', action='store_true', help='durable exchange')
-parser.add_argument('--persistent', action='store_true', help='persistant message')
-parser.add_argument('--declare', metavar='N', type=bool, help='declare exchange')
-parser.add_argument('--ack', action='store_true', help='ack message')
-parser.add_argument('--exclusive', action='store_true', help='exclusive queue')
 

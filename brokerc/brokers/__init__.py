@@ -34,5 +34,5 @@ def create(broker_name):
         broker_module = importlib.import_module("." + broker_name, "brokerc.brokers")
     except Exception as e:
         raise ImportError("Impossible to load : " + str(broker_name) + " : " + str(e))
-    broker = basebroker.BaseBroker(broker_name)
+    broker = basebroker.BaseBroker(broker_name, broker_module.__drivers__)
     return broker

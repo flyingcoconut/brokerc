@@ -18,16 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import importlib
-import pkgutil
 import os
 
 class BaseBroker(object):
-    def __init__(self, name):
+    def __init__(self, name, drivers):
         self.name = name
+        self.drivers = drivers
         self._driver = None
 
     def list_drivers(self):
-        return [f[1] for f in pkgutil.iter_modules([os.path.dirname(__file__) + "/brokers/" + self.name])]
+        return self.drivers
 
     def list_metadata(self):
         return self._driver.metadata
@@ -35,13 +35,25 @@ class BaseBroker(object):
     def list_actions(self):
         return self._driver.actions
 
+    def list_options(self):
+        self._driver.parser.print_help()
+
+    def list_metadata(self):
+        return self._driver.metadata
+
     def is_loaded(self):
         if self._driver:
             return True
         else:
             return False
 
-    def load(self, driver_name=None, args=None, callback=None):
+    def consume(self, callback):
+        self._driver.consume(callback)
+
+    def publish(self, message):
+        self._driver.publish(message)
+
+    def load_driver(self, driver_name=None, args=None, callback=None):
         if driver_name in self.list_drivers():
             driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
             driver = getattr(driver_module, 'Driver')

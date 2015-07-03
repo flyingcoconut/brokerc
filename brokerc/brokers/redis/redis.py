@@ -36,6 +36,11 @@ class Driver(driver.BaseDriver):
         self.parser.add_argument('--port', metavar='PORT', type=int, default=6379, help='redis port')
         self.parser.add_argument('--channel', metavar='N', type=str, nargs='+', required=True, help='channel name')
         self.parser.add_argument('--pattern', metavar='N', type=str, nargs='+', help='subscription pattern')
+        self.metadata = {
+            'pattern': "The pattern that matched a published message's channel.",
+            'type': "One of the following: subscribe, unsubscribe, psubscribe, punsubscribe, message, pmessage",
+            'channel': "The channel subscribed to or the channel a message was published to"
+        }
 
     def initialize(self):
         self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
