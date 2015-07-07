@@ -1,11 +1,13 @@
 from setuptools import setup
+from brokerc import _version
 
 def readme():
     with open('README.md') as f:
         return f.read()
 
 setup(name='brokerc',
-      version='0.0.1',
+      #version='0.0.1',
+      version=_version.__version__,
       description='brokerc',
       #long_description=readme(),
       classifiers=[

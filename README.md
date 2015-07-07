@@ -1,7 +1,7 @@
 # brokerc
 brokerc is a python multi-broker client.
 
-## Supported broker
+## Supported message broker
 * redis
 * amqp
 * ironmq
@@ -22,13 +22,28 @@ brokerc --broker redis --host localhost --port 6379 --channel test --consumer
 List available brokers
 ```
 brokerc --list-brokers
->amqp
->redis
->...
+amqp
+redis
+...
 ```
 
 brokerc support multiple drivers by broker. List availabled drivers.
 ```
 brokerc --broker amqp --list-drivers
->pika
+pika
+```
+
+## Installation
+
+Install brokerc with setuptools
+```
+sudo python3 setup.py install
+```
+
+## Dependencies
+
+Some driver may require python modules to be install
+```
+brokerc --broker amqp --driver pika --list-dependencies
+python3-pika
 ```

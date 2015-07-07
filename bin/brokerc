@@ -23,6 +23,7 @@ import os
 
 from brokerc import brokers
 from brokerc import output
+from brokerc import _version
 
 def main():
     parser = argparse.ArgumentParser(description='Message Broker Client')
@@ -32,6 +33,7 @@ def main():
     parser.add_argument('--list-brokers', action='store_true', help='list available brokers')
     parser.add_argument('--list-options', action='store_true', help='list available options')
     parser.add_argument('--list-metadata', action='store_true', help='list available metadata')
+    parser.add_argument('--list-dependencies', action='store_true', help='list driver dependencies')
     parser.add_argument('--debug', action='store_true', help='enable debug')
     parser.add_argument('--stats', action='store_true', help='display stats')
     parser.add_argument('--close', action='store_true', help='close consumer after one message')
@@ -39,11 +41,15 @@ def main():
     parser.add_argument('--meta', metavar='N', type=str, nargs='+', help='output specific metadata')
     parser.add_argument('--throttling', metavar='Msg/s', type=int, help='process message every second')
     parser.add_argument('--consumer', action='store_true', default=False, help='act as a consumer')
+    parser.add_argument('-v', '--version', action='store_true', help='display version')
     args, additional = parser.parse_known_args()
 
     out = output.Output(metadata=args.meta)
 
-    if args.list_brokers:
+    if args.version:
+        print('brokerc version: ' + str(_version.__version__))
+
+    elif args.list_brokers:
         for broker in brokers.list_brokers():
             print(broker)
 
@@ -69,6 +75,15 @@ def main():
             broker.load_driver(args.driver, additional, out.output)
             for meta in broker.list_metadata():
                 print(meta)
+        else:
+            sys.exit('No broker selected')
+
+    elif args.list_dependencies:
+        if args.broker:
+            broker = brokers.create(args.broker)
+            broker.load_driver(args.driver, additional, out.output)
+            for dependency in broker.list_dependencies():
+                print(dependency)
         else:
             sys.exit('No broker selected')
 

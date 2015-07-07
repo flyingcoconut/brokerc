@@ -41,6 +41,9 @@ class BaseBroker(object):
     def list_metadata(self):
         return self._driver.metadata
 
+    def list_dependencies(self):
+        return self._driver.dependencies
+
     def is_loaded(self):
         if self._driver:
             return True

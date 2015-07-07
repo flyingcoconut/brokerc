@@ -17,29 +17,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
-
-class BaseDriver(object):
-    def __init__(self, description, args, callback):
-        self.args = args
-        self.callback = callback
-        self.actions =  []
-        self.metadata = {}
-        self.dependencies = []
-        self.parser = argparse.ArgumentParser(prog='Driver(' + description + ')', usage='--driver ' + description + ' [OPTIONS]')
-
-
-    def parse_arguments(self):
-        self.args = self.parser.parse_args(self.args)
-
-    def initialize(self):
-        pass
-
-    def publish(self, message):
-        pass
-
-    def consume(self, callback):
-        pass
-
-    def close(self):
-        pass
+__version__ = '0.0.2'
