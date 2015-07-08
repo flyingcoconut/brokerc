@@ -19,7 +19,7 @@
 
 import zmq
 
-class ZmqDriver(object):
+class Driver(object):
     def __init__(self, args):
         self.args = args
 

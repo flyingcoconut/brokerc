@@ -25,7 +25,7 @@ from brokerc import message
 try:
     import redis
 except ImportError:
-    raise ImportError("package redis is not installed")
+    raise driver.DependenciesError("package redis is not installed")
 
 
 class Driver(driver.BaseDriver):

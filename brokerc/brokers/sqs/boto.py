@@ -22,7 +22,7 @@ try:
 except ImportError:
     raise ImportError("package boto is not installed")
 
-class BotoDriver(object):
+class Driver(object):
     def __init__(self, args):
         self.args = args
 

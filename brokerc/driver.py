@@ -19,6 +19,12 @@
 
 import argparse
 
+class DependenciesError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class BaseDriver(object):
     def __init__(self, description, args, callback):
         self.args = args

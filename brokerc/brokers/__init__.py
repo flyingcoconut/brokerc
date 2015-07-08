@@ -26,6 +26,35 @@ from brokerc import basebroker
 def list_brokers():
     return [f[1] for f in pkgutil.iter_modules([os.path.dirname(__file__)])]
 
+def test(broker_name=None, driver_name=None):
+    report = {}
+    if broker_name:
+        report[broker_name] = {}
+        try:
+            broker = create(broker_name)
+        except Exception as e:
+            report[broker_name]['status'] = 'Fail'
+            report[broker_name]['error'] = str(e)
+            report[broker_name]['drivers'] = {}
+        else:
+            report[broker_name]['status'] = 'Succeed'
+            report[broker_name]['error'] = 'None'
+            report[broker_name]['drivers'] = broker.test(driver_name)
+    else:
+        for broker_name in list_brokers():
+            report[broker_name] = {}
+            try:
+                broker = create(broker_name)
+            except Exception as e:
+                report[broker_name]['status'] = 'Fail'
+                report[broker_name]['error'] = str(e)
+                report[broker_name]['drivers'] = {}
+            else:
+                report[broker_name]['status'] = 'Succeed'
+                report[broker_name]['error'] = 'None'
+                report[broker_name]['drivers'] = broker.test(driver_name)
+    return report
+
 def create(broker_name):
     #Load broker module
     if broker_name not in list_brokers():

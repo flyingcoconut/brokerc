@@ -20,6 +20,12 @@
 import importlib
 import os
 
+class LoadDriverError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class BaseBroker(object):
     def __init__(self, name, drivers):
         self.name = name
@@ -56,17 +62,49 @@ class BaseBroker(object):
     def publish(self, message):
         self._driver.publish(message)
 
+    def test(self, driver_name=None):
+        report = {}
+        if driver_name:
+            report[driver_name] = {}
+            try:
+                self.load_driver(driver_name)
+            except Exception as e:
+                report[driver_name]['status'] = 'Fail'
+                report[driver_name]['error'] = str(e)
+            else:
+                report[driver_name]['status'] = 'Succeed'
+                report[driver_name]['error'] = 'None'
+        else:
+            for driver_name in self.drivers:
+                report[driver_name] = {}
+                try:
+                    self.load_driver(driver_name)
+                except Exception as e:
+                    report[driver_name]['status'] = 'Fail'
+                    report[driver_name]['error'] = str(e)
+                else:
+                    report[driver_name]['status'] = 'Succeed'
+                    report[driver_name]['error'] = 'None'
+        return report
+
+    def _test(self, driver_name)
+        pass
+
     def load_driver(self, driver_name=None, args=None, callback=None):
-        if driver_name in self.list_drivers():
-            driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
-            driver = getattr(driver_module, 'Driver')
-            self._driver = driver(driver_name, args, callback)
+        if driver_name:
+            self._load_driver(driver_name, args, callback)
         else:
             for driver_name in self.list_drivers():
-                driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
-                driver = getattr(driver_module, 'Driver')
-                self._driver = driver(driver_name, args, callback)
+                self._load_driver(driver_name, args, callback)
 
+    def _load_driver(self, driver_name, args, callback):
+        driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
+        driver = getattr(driver_module, 'Driver')
+        try:
+            self._driver = driver(driver_name, args, callback)
+        except Exception as e:
+            raise LoadDriverError(e)
+                
     def parse_arguments(self):
         self._driver.parse_arguments()
 
