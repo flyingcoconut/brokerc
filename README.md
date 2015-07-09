@@ -53,17 +53,37 @@ You can test brokers and drivers to validate and test dependencies
 Test all brokers and drivers
 ```
 brokerc --test
-python3-pika
+Broker: mqtt, Status: Succeed, Error: None
+ |- Driver: paho-mqtt, Status: Fail, Error: 'module' object has no attribute 'Driver'
+Broker: kafka, Status: Succeed, Error: None
+ |- Driver: kafka-python, Status: Fail, Error: 'module' object has no attribute 'Driver'
+Broker: amqp, Status: Succeed, Error: None
+ |- Driver: pika, Status: Succeed, Error: None
+Broker: redis, Status: Succeed, Error: None
+ |- Driver: redis, Status: Succeed, Error: None
+Broker: driver, Status: Fail, Error: 'module' object has no attribute '__drivers__'
+Broker: zmq, Status: Succeed, Error: None
+ |- Driver: zmq, Status: Fail, Error: TypeError('__init__() takes 2 positional arguments but 4 were given',)
+Broker: sqs, Status: Succeed, Error: None
+ |- Driver: boto, Status: Fail, Error: TypeError('__init__() takes 2 positional arguments but 4 were given',)
+Broker: stomp, Status: Succeed, Error: None
+ |- Driver: stomppy, Status: Fail, Error: TypeError('__init__() takes 2 positional arguments but 4 were given',)
+Broker: nsq, Status: Succeed, Error: None
+ |- Driver: pynsq, Status: Fail, Error: invalid syntax (async.py, line 319)
+Broker: ironmq, Status: Succeed, Error: None
+ |- Driver: iron-mq, Status: Fail, Error: package iron-mq is not installed
 ```
 
 Test a specific broker
 ```
 brokerc --test --broker amqp
-python3-pika
+Broker: amqp, Status: Succeed, Error: None
+ |- Driver: pika, Status: Succeed, Error: None
 ```
 
 Test a specific driver
 ```
 brokerc --test --broker amqp --driver pika
-python3-pika
+Broker: amqp, Status: Succeed, Error: None
+ |- Driver: pika, Status: Succeed, Error: None
 ```
