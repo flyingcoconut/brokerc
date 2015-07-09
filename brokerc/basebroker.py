@@ -20,6 +20,12 @@
 import importlib
 import os
 
+class DriverNotLoadedError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class LoadDriverError(Exception):
     def __init__(self, value):
         self.value = value
@@ -50,6 +56,9 @@ class BaseBroker(object):
     def list_dependencies(self):
         return self._driver.dependencies
 
+    def list_actions(self):
+        return self._driver.actions
+
     def is_loaded(self):
         if self._driver:
             return True
@@ -65,30 +74,23 @@ class BaseBroker(object):
     def test(self, driver_name=None):
         report = {}
         if driver_name:
-            report[driver_name] = {}
-            try:
-                self.load_driver(driver_name)
-            except Exception as e:
-                report[driver_name]['status'] = 'Fail'
-                report[driver_name]['error'] = str(e)
-            else:
-                report[driver_name]['status'] = 'Succeed'
-                report[driver_name]['error'] = 'None'
+            report[driver_name] = self._test(driver_name)
         else:
             for driver_name in self.drivers:
-                report[driver_name] = {}
-                try:
-                    self.load_driver(driver_name)
-                except Exception as e:
-                    report[driver_name]['status'] = 'Fail'
-                    report[driver_name]['error'] = str(e)
-                else:
-                    report[driver_name]['status'] = 'Succeed'
-                    report[driver_name]['error'] = 'None'
+                report[driver_name] = self._test(driver_name)
         return report
 
-    def _test(self, driver_name)
-        pass
+    def _test(self, driver_name):
+        report = {}
+        try:
+            self.load_driver(driver_name)
+        except Exception as e:
+            report['status'] = 'Fail'
+            report['error'] = str(e)
+        else:
+            report['status'] = 'Succeed'
+            report['error'] = 'None'
+        return report
 
     def load_driver(self, driver_name=None, args=None, callback=None):
         if driver_name:

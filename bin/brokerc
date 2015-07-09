@@ -27,13 +27,15 @@ from brokerc import _version
 
 def main():
     parser = argparse.ArgumentParser(description='Message Broker Client')
-    parser.add_argument('--broker', metavar='BROKER', type=str, help='broker')
-    parser.add_argument('--driver', metavar='DRIVER', type=str, help='broker driver')
+    parser.add_argument('-b', '--broker', metavar='BROKER', type=str, help='broker')
+    parser.add_argument('-d', '--driver', metavar='DRIVER', type=str, help='broker driver')
     parser.add_argument('--list-drivers', action='store_true', help='list available drivers')
     parser.add_argument('--list-brokers', action='store_true', help='list available brokers')
     parser.add_argument('--list-options', action='store_true', help='list available options')
     parser.add_argument('--list-metadata', action='store_true', help='list available metadata')
     parser.add_argument('--list-dependencies', action='store_true', help='list driver dependencies')
+    parser.add_argument('--list-actions', action='store_true', help='list available actions')
+    parser.add_argument('--action', metavar='ACTION', type=str, help='execute action')
     parser.add_argument('--test', action='store_true', help='test all available brokers and drivers')
     parser.add_argument('--debug', action='store_true', help='enable debug')
     parser.add_argument('--stats', action='store_true', help='display stats')
@@ -55,7 +57,15 @@ def main():
         for broker in report:
             print('Broker: ' + broker + ', Status: ' + report[broker]['status'] + ', Error: ' + report[broker]['error'])
             for driver in report[broker]['drivers']:
-                print(' |- Driver: ' + driver + ', Status: ' + report[broker]['drivers'][driver]['status'] + ', Error: ' + report[broker]['drivers'][driver]['error'])
+                print('|- Driver: ' + driver + ', Status: ' + report[broker]['drivers'][driver]['status'] + ', Error: ' + report[broker]['drivers'][driver]['error'])
+
+    elif args.list_actions:
+        if args.broker:
+            broker = brokers.create(args.broker)
+            broker.load_driver(args.driver, additional, out.output)
+            broker.list_actions()
+        else:
+            sys.exit('No broker selected')
 
     elif args.list_brokers:
         for broker in brokers.list_brokers():
