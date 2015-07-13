@@ -25,7 +25,9 @@ import pika
 class Driver(driver.BaseDriver):
     def __init__(self, description, args, callback):
         driver.BaseDriver.__init__(self, description, args, callback)
-        self.dependencies.append('python3-pika')
+        self.dependencies = {
+            'python3-pika': 'pika'
+        }
         self.parser.add_argument('--host', metavar='HOSTNAME', type=str, default="localhost", help='AMQP hostname')
         self.parser.add_argument('--port', metavar='PORT', type=int, default=5672, help='AMQP port')
         self.parser.add_argument('--prefetch', metavar='QUANTITY', type=int, help='prefetch')

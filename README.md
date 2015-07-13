@@ -2,15 +2,15 @@
 brokerc is a python multi-broker client.
 
 ## Supported message broker
-* redis [Redis](http://redis.io/)
-* amqp [AMQP](http://www.amqp.org/)
-* ironmq [IronMq](https://www.iron.io/mq/)
-* kafka [Apache Kafka](http://kafka.apache.org/)
-* mqtt [MQTT](http://mqtt.org/)
-* nsq [NSQ](http://nsq.io/)
-* sqs [Amazon SQS](http://aws.amazon.com/sqs/)
-* stomp [Stomp](http://stomp.github.io/)
-* zmq [ZeroMQ](http://zeromq.org/)
+* redis - [Redis](http://redis.io/)
+* amqp - [AMQP](http://www.amqp.org/)
+* ironmq - [IronMq](https://www.iron.io/mq/)
+* kafka - [Apache Kafka](http://kafka.apache.org/)
+* mqtt - [MQTT](http://mqtt.org/)
+* nsq - [NSQ](http://nsq.io/)
+* sqs - [Amazon SQS](http://aws.amazon.com/sqs/)
+* stomp - [Stomp](http://stomp.github.io/)
+* zmq - [ZeroMQ](http://zeromq.org/)
 
 ## Example
 Start a redis consumer on channel test

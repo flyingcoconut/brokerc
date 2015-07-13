@@ -17,14 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    import boto.sqs
-except ImportError:
-    raise ImportError("package boto is not installed")
+dependencies = [
+    'boto'
+]
 
 class Driver(object):
     def __init__(self, args):
         self.args = args
+        try:
+            import boto.sqs
+        except ImportError:
+            raise ImportError("package boto is not installed")
 
     def initialize(self):
         pass

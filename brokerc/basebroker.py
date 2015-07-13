@@ -54,7 +54,7 @@ class BaseBroker(object):
         return self._driver.metadata
 
     def list_dependencies(self):
-        return self._driver.dependencies
+        return self._driver.dependencies.keys()
 
     def list_actions(self):
         return self._driver.actions
@@ -84,6 +84,7 @@ class BaseBroker(object):
         report = {}
         try:
             self.load_driver(driver_name)
+            self.import_dependencies()
         except Exception as e:
             report['status'] = 'Fail'
             report['error'] = str(e)
@@ -109,6 +110,9 @@ class BaseBroker(object):
                 
     def parse_arguments(self):
         self._driver.parse_arguments()
+
+    def import_dependencies(self):
+        self._driver.import_dependencies()
 
     def initialize(self):
         self._driver.initialize()

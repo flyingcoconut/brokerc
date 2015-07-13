@@ -22,11 +22,9 @@ import time
 from brokerc import driver
 from brokerc import message
 
-try:
-    import redis
-except ImportError:
-    raise driver.DependenciesError("package redis is not installed")
-
+dependencies = [
+    'redis'
+]
 
 class Driver(driver.BaseDriver):
     def __init__(self, description, args, callback):
@@ -40,6 +38,9 @@ class Driver(driver.BaseDriver):
             'pattern': "The pattern that matched a published message's channel.",
             'type': "One of the following: subscribe, unsubscribe, psubscribe, punsubscribe, message, pmessage",
             'channel': "The channel subscribed to or the channel a message was published to"
+        }
+        self.dependencies = {
+            'redis': 'redis'
         }
 
     def initialize(self):

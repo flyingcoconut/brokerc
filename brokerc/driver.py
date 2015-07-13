@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+import importlib
 import argparse
 
 class DependenciesError(Exception):
@@ -31,12 +31,20 @@ class BaseDriver(object):
         self.callback = callback
         self.actions =  []
         self.metadata = {}
-        self.dependencies = []
+        self.dependencies = {}
+        self.modules = {}
         self.parser = argparse.ArgumentParser(prog='Driver(' + description + ')', usage='--driver ' + description + ' [OPTIONS]')
 
 
     def parse_arguments(self):
         self.args = self.parser.parse_args(self.args)
+
+    def import_dependencies(self):
+        for package in self.dependencies:
+            try:
+                self.modules[self.dependencies[package]] = importlib.import_module(self.dependencies[package])
+            except ImportError:
+                raise DependenciesError('Impossible to satify dependency : ' + package)
 
     def initialize(self):
         pass
