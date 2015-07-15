@@ -22,10 +22,6 @@ import time
 from brokerc import driver
 from brokerc import message
 
-dependencies = [
-    'redis'
-]
-
 class Driver(driver.BaseDriver):
     def __init__(self, description, args, callback):
         driver.BaseDriver.__init__(self, description, args, callback)
@@ -44,7 +40,7 @@ class Driver(driver.BaseDriver):
         }
 
     def initialize(self):
-        self.connection = redis.StrictRedis(host=self.args.host, port=self.args.port)
+        self.connection = self.modules['redis'].StrictRedis(host=self.args.host, port=self.args.port)
         self.pubsub = self.connection.pubsub(ignore_subscribe_messages=True)
         
     def consume(self, callback):
@@ -65,7 +61,7 @@ class Driver(driver.BaseDriver):
             self.connection.publish(channel, message)
 
     def close(self):
-        pass
+        self.pubsub.close()
 
 
 

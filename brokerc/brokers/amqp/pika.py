@@ -43,8 +43,8 @@ class Driver(driver.BaseDriver):
         self.parser.add_argument('--exclusive', action='store_true', help='exclusive queue')
 
     def initialize(self):
-        pika.ConnectionParameters(host=self.args.host)
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.args.host))
+        #pika.ConnectionParameters(host=self.args.host)
+        self.connection = self.modules['pika'].BlockingConnection(pika.ConnectionParameters(host=self.args.host))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=self.args.exchange, type='direct', durable=True)
         self.result = self.channel.queue_declare(exclusive=True)

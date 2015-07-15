@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import importlib
 import os
 
@@ -37,23 +38,32 @@ class BaseBroker(object):
         self.name = name
         self.drivers = drivers
         self._driver = None
+        self.debug_level = logging.DEBUG
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(formatter)
+        self.logger.addHandler(ch)
 
     def list_drivers(self):
+        self.logger.info("Listing drivers")
         return self.drivers
 
     def list_metadata(self):
+        self.logger.info("Listing metada")
         return self._driver.metadata
 
     def list_actions(self):
+        self.logger.info("Listing actions")
         return self._driver.actions
 
     def list_options(self):
         self._driver.parser.print_help()
 
-    def list_metadata(self):
-        return self._driver.metadata
-
     def list_dependencies(self):
+        self.logger.info("Listing dependencies")
         return self._driver.dependencies.keys()
 
     def list_actions(self):
@@ -66,10 +76,22 @@ class BaseBroker(object):
             return False
 
     def consume(self, callback):
-        self._driver.consume(callback)
+        self.logger.info("Start consuming")
+        try:
+            self._driver.consume(callback)
+        except:
+            self.logger("Error consuming")
+        else:
+            self.info("Stop consuming")
 
     def publish(self, message):
-        self._driver.publish(message)
+        self.logger.info("Publishing")
+        try:
+            self._driver.publish(message)
+        except:
+            self.logger.error("Error publishing")
+        else:
+            self.logger.info("Message published")
 
     def test(self, driver_name=None):
         report = {}
@@ -95,27 +117,59 @@ class BaseBroker(object):
 
     def load_driver(self, driver_name=None, args=None, callback=None):
         if driver_name:
+            self.logger.info("Loading driver : " + driver_name)
             self._load_driver(driver_name, args, callback)
         else:
+            self.logger.info("Trying to load available drivers")
             for driver_name in self.list_drivers():
+                self.logger.info("Loading driver : " + driver_name)
                 self._load_driver(driver_name, args, callback)
 
     def _load_driver(self, driver_name, args, callback):
+        self.logger.info("Loading driver module")
         driver_module = importlib.import_module("." + driver_name, "brokerc.brokers." + self.name)
+        self.logger.info("Create driver object")
         driver = getattr(driver_module, 'Driver')
         try:
             self._driver = driver(driver_name, args, callback)
         except Exception as e:
+            self.logger.error("Impossible to load driver")
             raise LoadDriverError(e)
+        else:
+            self.logger.info("Driver load successfully")
                 
     def parse_arguments(self):
-        self._driver.parse_arguments()
+        self.logger.info("Parsing arguments")
+        try:
+            self._driver.parse_arguments()
+        except:
+            self.logger.error("Error parsing arguments")
+        else:
+            self.logger.info("Arguments parsed")
 
     def import_dependencies(self):
-        self._driver.import_dependencies()
+        self.logger.info("Importing dependencies")
+        try:
+            self._driver.import_dependencies()
+        except:
+            self.logger("Error importing dependencies")
+        else:
+            self.logger.info("Dependencies imported")
 
     def initialize(self):
-        self._driver.initialize()
+        self.logger.info("Initializing driver")
+        try:
+            self._driver.initialize()
+        except:
+            self.logger.error("Error initializing driver")
+        else:
+            self.logger.info("Driver initialized")
 
     def close(self):
-        self._driver.close()
+        self.logger.info("Closing connection")
+        try:
+            self._driver.close()
+        except:
+             self.logger.error("Error closing connection")
+        else:
+             self.logger.info("Connection closed")

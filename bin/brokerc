@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--list-actions', action='store_true', help='list available actions')
     parser.add_argument('--action', metavar='ACTION', type=str, help='execute action')
     parser.add_argument('--test', action='store_true', help='test all available brokers and drivers')
-    parser.add_argument('--debug', action='store_true', help='enable debug')
+    parser.add_argument('--debug', metavar='LEVEL', type=str, help='set debug level (INFO|ERROR|DEBUG|WARNING)')
     parser.add_argument('--stats', action='store_true', help='display stats')
     parser.add_argument('--close', action='store_true', help='close consumer after one message')
     parser.add_argument('--sample', type=int, help='print message at a specific frequency')
@@ -109,6 +109,7 @@ def main():
         try:
             broker = brokers.create(args.broker)
             broker.load_driver(args.driver, additional, out.output)
+            broker.import_dependencies()
         except ImportError as e:
             sys.exit(e)
         except ValueError as e:
@@ -124,6 +125,7 @@ def main():
             try:
                 broker.consume("")
             except KeyboardInterrupt:
+                broker.close()
                 sys.exit(0)
         else:
             if os.isatty(0):
@@ -132,6 +134,7 @@ def main():
                 for line in sys.stdin:
                     broker.publish(line.strip())
             except KeyboardInterrupt:
+                broker.close()
                 sys.exit(0)
 
 if __name__ == "__main__":
