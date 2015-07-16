@@ -20,8 +20,15 @@
 import importlib
 import os
 import pkgutil
+import logging
 
 from brokerc import basebroker
+
+DEBUG_LEVEL_CRITICAL = logging.CRITICAL
+DEBUG_LEVEL_ERROR = logging.ERROR
+DEBUG_LEVEL_WARNING = logging.WARNING
+DEBUG_LEVEL_INFO = logging.INFO
+DEBUG_LEVEL_DEBUG = logging.DEBUG
 
 def list_brokers():
     return [f[1] for f in pkgutil.iter_modules([os.path.dirname(__file__)])]
@@ -29,30 +36,24 @@ def list_brokers():
 def test(broker_name=None, driver_name=None):
     report = {}
     if broker_name:
-        report[broker_name] = {}
-        try:
-            broker = create(broker_name)
-        except Exception as e:
-            report[broker_name]['status'] = 'Fail'
-            report[broker_name]['error'] = str(e)
-            report[broker_name]['drivers'] = {}
-        else:
-            report[broker_name]['status'] = 'Succeed'
-            report[broker_name]['error'] = 'None'
-            report[broker_name]['drivers'] = broker.test(driver_name)
+        report[broker_name] = _test(broker_name, driver_name)
     else:
         for broker_name in list_brokers():
-            report[broker_name] = {}
-            try:
-                broker = create(broker_name)
-            except Exception as e:
-                report[broker_name]['status'] = 'Fail'
-                report[broker_name]['error'] = str(e)
-                report[broker_name]['drivers'] = {}
-            else:
-                report[broker_name]['status'] = 'Succeed'
-                report[broker_name]['error'] = 'None'
-                report[broker_name]['drivers'] = broker.test(driver_name)
+            report[broker_name] = _test(broker_name, driver_name)
+    return report
+
+def _test(broker_name, driver_name):
+    report = {}
+    try:
+        broker = create(broker_name)
+    except Exception as e:
+        report['status'] = 'Fail'
+        report['error'] = str(e)
+        report['drivers'] = {}
+    else:
+        report['status'] = 'Succeed'
+        report['error'] = 'None'
+        report['drivers'] = broker.test(driver_name)
     return report
 
 def create(broker_name):

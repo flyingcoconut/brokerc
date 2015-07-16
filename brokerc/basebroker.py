@@ -34,7 +34,7 @@ class LoadDriverError(Exception):
         return repr(self.value)
 
 class BaseBroker(object):
-    def __init__(self, name, drivers):
+    def __init__(self, name, drivers, debug_level=logging.NOTSET):
         self.name = name
         self.drivers = drivers
         self._driver = None
@@ -42,17 +42,19 @@ class BaseBroker(object):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - ' + self.name + ' - %(levelname)s - %(message)s')
         ch.setLevel(logging.DEBUG)
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
 
     def list_drivers(self):
         self.logger.info("Listing drivers")
+        self.logger.debug('Available drivers : ' + str(self.drivers))
         return self.drivers
 
     def list_metadata(self):
         self.logger.info("Listing metada")
+        self.logger.debug('Available metadata : ' + str(self._driver.metadata))
         return self._driver.metadata
 
     def list_actions(self):
@@ -60,19 +62,20 @@ class BaseBroker(object):
         return self._driver.actions
 
     def list_options(self):
+        self.logger.info("Listing options")
         self._driver.parser.print_help()
 
     def list_dependencies(self):
         self.logger.info("Listing dependencies")
         return self._driver.dependencies.keys()
 
-    def list_actions(self):
-        return self._driver.actions
-
     def is_loaded(self):
+        self.logger.info("Verifying if driver is loaded")
         if self._driver:
+            self.logger.info("Driver is loaded")
             return True
         else:
+            self.logger.info("Driver is not loaded")
             return False
 
     def consume(self, callback):
@@ -80,9 +83,9 @@ class BaseBroker(object):
         try:
             self._driver.consume(callback)
         except:
-            self.logger("Error consuming")
+            self.logger.error("Error consuming")
         else:
-            self.info("Stop consuming")
+            self.logger.info("Stop consuming")
 
     def publish(self, message):
         self.logger.info("Publishing")
@@ -94,6 +97,7 @@ class BaseBroker(object):
             self.logger.info("Message published")
 
     def test(self, driver_name=None):
+        self.logger.info("Sarting driver testing")
         report = {}
         if driver_name:
             report[driver_name] = self._test(driver_name)
@@ -103,14 +107,17 @@ class BaseBroker(object):
         return report
 
     def _test(self, driver_name):
+        self.logger.info("Testing driver : " + str(driver_name))
         report = {}
         try:
             self.load_driver(driver_name)
             self.import_dependencies()
         except Exception as e:
+            self.logger.error("Driver : " + str(driver_name) + ' failed')
             report['status'] = 'Fail'
             report['error'] = str(e)
         else:
+            self.logger.info("Driver : " + str(driver_name) + ' succeed')
             report['status'] = 'Succeed'
             report['error'] = 'None'
         return report
@@ -140,6 +147,7 @@ class BaseBroker(object):
                 
     def parse_arguments(self):
         self.logger.info("Parsing arguments")
+        self.logger.debug('Arguments : ' + str(self._driver.args))
         try:
             self._driver.parse_arguments()
         except:

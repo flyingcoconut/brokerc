@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--list-actions', action='store_true', help='list available actions')
     parser.add_argument('--action', metavar='ACTION', type=str, help='execute action')
     parser.add_argument('--test', action='store_true', help='test all available brokers and drivers')
-    parser.add_argument('--debug', metavar='LEVEL', type=str, help='set debug level (INFO|ERROR|DEBUG|WARNING)')
+    parser.add_argument('--debug', metavar='LEVEL', type=str, choices=['critical', 'error', 'warning', 'info', 'debug'], help='set debug level (INFO|ERROR|DEBUG|WARNING)')
     parser.add_argument('--stats', action='store_true', help='display stats')
     parser.add_argument('--close', action='store_true', help='close consumer after one message')
     parser.add_argument('--sample', type=int, help='print message at a specific frequency')
